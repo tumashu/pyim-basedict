@@ -52,6 +52,14 @@
 ;;    (require 'chinese-pyim-basedict)
 ;;    #+END_EXAMPLE
 
+;; ** 如何为这个项目贡献词条
+;; Chinese-pyim 的用户，如果想让自己常用词条进入 chinese-pyim 默认词库的话，
+;; 可以将您的 `pyim-personal-file' 个人文件清理一下（主要清理与隐私相关的词条），
+;; 然后用 email 以附件的形式发给我，并在正文中 *明确* 说明这个文件所使用的协议，
+;; 我负责合并。
+
+;; 注：除了使用 email，用户也可以使用 Github 的 issue 系统提交需求。
+
 ;;; Code:
 ;; * 代码                                                               :code:
 ;; #+BEGIN_SRC emacs-lisp
