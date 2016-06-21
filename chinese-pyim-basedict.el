@@ -50,6 +50,7 @@
 ;; 3. 在emacs配置文件中（比如: ~/.emacs）添加如下代码：
 ;;    #+BEGIN_EXAMPLE
 ;;    (require 'chinese-pyim-basedict)
+;;    (chinese-pyim-basedict-enable)
 ;;    #+END_EXAMPLE
 
 ;; ** 如何为这个项目贡献词条
@@ -80,10 +81,6 @@
                    :dict-type pinyin-dict
                    :elpa t))
         (message "Chinese-pyim 没有安装，chinese-pyim-basedict 启用失败。")))))
-
-;; Enable pyim-basedict
-(chinese-pyim-basedict-enable)
-
 ;; #+END_SRC
 
 ;; * Footer
