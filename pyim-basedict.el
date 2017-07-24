@@ -59,7 +59,6 @@
 
 ;;; Code:
 ;; * 代码                                                               :code:
-;; #+BEGIN_SRC emacs-lisp
 
 ;;;###autoload
 (defun pyim-basedict-enable ()
@@ -77,11 +76,9 @@
                    :dict-type pinyin-dict
                    :elpa t))
         (message "pyim 没有安装，pyim-basedict 启用失败。")))))
-;; #+END_SRC
 
 ;; * Footer
 
-;; #+BEGIN_SRC emacs-lisp
 (provide 'pyim-basedict)
 
 ;; Local Variables:
@@ -89,4 +86,3 @@
 ;; End:
 
 ;;; pyim-basedict.el ends here
-;; #+END_SRC
