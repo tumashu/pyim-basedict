@@ -66,7 +66,7 @@
   (interactive)
   (let* ((file (concat (file-name-directory
                         (locate-library "pyim-basedict.el"))
-                       "pyim-basedict.pyim.gz")))
+                       "pyim-basedict.pyim")))
     (when (file-exists-p file)
       (if (featurep 'pyim)
           (pyim-extra-dicts-add-dict
