@@ -109,12 +109,12 @@
                       "'" "-"
                       (car contents)))
                (word (cadr contents)))
-          (puthash code (cl-pushnew word (gethash code hash-table))
+          (puthash code (push word (gethash code hash-table))
                    hash-table))
         (forward-line 1)))
     (with-temp-buffer
       (maphash (lambda (key value)
-                 (setq value (reverse value))
+                 (setq value (delete-dups (reverse value)))
                  (unless (string-match-p "-" key)
                    (setq value (sort value #'pyim-pymap-cchar<)))
                  (insert (format "%s %s\n" key (mapconcat #'identity value " "))))
