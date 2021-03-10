@@ -50,25 +50,23 @@
 
 ;;; Code:
 ;; * 代码                                                               :code:
-(defvar pyim-basedict-libpinyin-table-files
-  (mapcar (lambda (x)
-            (concat "libpinyin-data/" x))
-          (list "society.table"
-                "life.table"
-                "people.table"
-                "culture.table"
-                "economy.table"
-                "technology.table"
-                "science.table"
-                "nature.table"
-                "history.table"
-                "art.table"
-                "sport.table"
-                "geology.table"
-                "merged.table"
-                "opengram.table"
-                "gb_char.table"
-                "gbk_char.table"))
+(defvar pyim-basedict-libpinyin-data-files
+  (list "society.table"
+        "life.table"
+        "people.table"
+        "culture.table"
+        "economy.table"
+        "technology.table"
+        "science.table"
+        "nature.table"
+        "history.table"
+        "art.table"
+        "sport.table"
+        "geology.table"
+        "merged.table"
+        "opengram.table"
+        "gb_char.table"
+        "gbk_char.table")
   "Libpinyin data files")
 
 ;;;###autoload
@@ -95,12 +93,13 @@
 (defun pyim-basedict-build-file ()
   "使用 libpinyin 自带的 data 文件创建 pyim-basedict.pyim."
   (interactive)
-  (let ((hash-table (make-hash-table :test #'equal)))
+  (let ((dir (read-directory-name "请选择 libpinyin data 所在的目录："))
+        (hash-table (make-hash-table :test #'equal)))
     (with-temp-buffer
       (erase-buffer)
-      (dolist (file pyim-basedict-libpinyin-table-files)
-        (when (file-exists-p file)
-          (insert-file-contents file)
+      (dolist (filename pyim-basedict-libpinyin-data-files)
+        (when (file-exists-p (expand-file-name filename dir))
+          (insert-file-contents (expand-file-name filename dir))
           (goto-char (point-max))))
       (goto-char (point-min))
       (while (not (eobp))
@@ -113,16 +112,17 @@
                    hash-table))
         (forward-line 1)))
     (with-temp-buffer
-      (maphash (lambda (key value)
-                 (setq value (delete-dups (reverse value)))
-                 (unless (string-match-p "-" key)
-                   (setq value (sort value #'pyim-pymap-cchar<)))
-                 (insert (format "%s %s\n" key (mapconcat #'identity value " "))))
-               hash-table)
+      (maphash
+       (lambda (key value)
+         (setq value (delete-dups (reverse value)))
+         (unless (string-match-p "-" key)
+           (setq value (sort value #'pyim-pymap-cchar<)))
+         (insert (format "%s %s\n" key (mapconcat #'identity value " "))))
+       hash-table)
       (sort-lines nil (point-min) (point-max))
       (goto-char (point-min))
       (insert ";; -*- coding: utf-8 -*--\n")
-      (write-file "pyim-basedict.pyim"))))
+      (write-file "pyim-basedict.pyim" t))))
 
 ;; * Footer
 (provide 'pyim-basedict)
