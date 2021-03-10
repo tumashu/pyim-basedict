@@ -31,18 +31,13 @@
 ;; * pyim-basedict README                         :README:doc:
 
 ;; ** 简介
-;; pyim-basedict 是 pyim 输入法的默认词库，词库来源:
+;; pyim-basedict 是 pyim 输入法的默认词库，词库数据来源为 libpinyin 项目。
 
-;; 1. libpinyin 项目的内置词库
-;; 2. pyim 用户贡献的个人词库
+;;           https://github.com/libpinyin/libpinyin
 
 ;; 注意：这个词库的词条量大概在 10 万左右，是一个 *比较小* 的词库，只能确保 pyim
-;; 可以正常工作，如果用户想让 pyim 更加顺手，需要添加其它附加词库，
-;; 一个比较好的选择是安装 pyim-greatdict（不过这个词库非常庞大，词条量
-;; 超过300万，不适合计算机 cpu 和内存不足的用户）。用户也可以使用其它方式
-;; 添加词库，具体请阅读 pyim README：
-
-;;         https://github.com/tumashu/pyim
+;; 可以正常工作，如果用户想让 pyim 更加顺手，需要添加其它附加词库，具体添加词库的
+;; 方式可以参考 pyim 的 README.
 
 ;; ** 安装和使用
 ;; 1. 配置melpa源，参考：http://melpa.org/#/getting-started
@@ -55,6 +50,26 @@
 
 ;;; Code:
 ;; * 代码                                                               :code:
+(defvar pyim-basedict-libpinyin-table-files
+  (mapcar (lambda (x)
+            (concat "libpinyin-data/" x))
+          (list "society.table"
+                "life.table"
+                "people.table"
+                "culture.table"
+                "economy.table"
+                "technology.table"
+                "science.table"
+                "nature.table"
+                "history.table"
+                "art.table"
+                "sport.table"
+                "geology.table"
+                "merged.table"
+                "opengram.table"
+                "gb_char.table"
+                "gbk_char.table"))
+  "Libpinyin data files")
 
 ;;;###autoload
 (defun pyim-basedict-enable ()
@@ -72,6 +87,42 @@
                    :dict-type pinyin-dict
                    :elpa t))
         (message "pyim 没有安装，pyim-basedict 启用失败。")))))
+
+
+(declare-function 'pyim-dline-parse "pyim")
+(declare-function 'pyim-pymap-cchar< "pyim-pymap")
+
+(defun pyim-basedict-build-file ()
+  "使用 libpinyin 自带的 data 文件创建 pyim-basedict.pyim."
+  (interactive)
+  (let ((hash-table (make-hash-table :test #'equal)))
+    (with-temp-buffer
+      (erase-buffer)
+      (dolist (file pyim-basedict-libpinyin-table-files)
+        (when (file-exists-p file)
+          (insert-file-contents file)
+          (goto-char (point-max))))
+      (goto-char (point-min))
+      (while (not (eobp))
+        (let* ((contents (pyim-dline-parse))
+               (code (replace-regexp-in-string
+                      "'" "-"
+                      (car contents)))
+               (word (cadr contents)))
+          (puthash code (cl-pushnew word (gethash code hash-table))
+                   hash-table))
+        (forward-line 1)))
+    (with-temp-buffer
+      (maphash (lambda (key value)
+                 (setq value (reverse value))
+                 (unless (string-match-p "-" key)
+                   (setq value (sort value #'pyim-pymap-cchar<)))
+                 (insert (format "%s %s\n" key (mapconcat #'identity value " "))))
+               hash-table)
+      (sort-lines nil (point-min) (point-max))
+      (goto-char (point-min))
+      (insert ";; -*- coding: utf-8 -*--\n")
+      (write-file "pyim-basedict.pyim"))))
 
 ;; * Footer
 
