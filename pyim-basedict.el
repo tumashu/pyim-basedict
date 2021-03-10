@@ -125,11 +125,6 @@
       (write-file "pyim-basedict.pyim"))))
 
 ;; * Footer
-
 (provide 'pyim-basedict)
-
-;; Local Variables:
-;; no-byte-compile: t
-;; End:
 
 ;;; pyim-basedict.el ends here
