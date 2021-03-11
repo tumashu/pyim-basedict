@@ -33,7 +33,7 @@
 ;; ** 简介
 ;; pyim-basedict 是 pyim 输入法的默认词库，词库数据来源为 libpinyin 项目。
 
-;;           https://github.com/libpinyin/libpinyin
+;;  https://github.com/libpinyin/libpinyin/releases (Data files we need is in release tarball)
 
 ;; 注意：这个词库的词条量大概在 10 万左右，是一个 *比较小* 的词库，只能确保 pyim
 ;; 可以正常工作，如果用户想让 pyim 更加顺手，需要添加其它附加词库，具体添加词库的
@@ -49,6 +49,10 @@
 
 ;;; Code:
 ;; * 代码                                                               :code:
+(defvar pyim-basedict-libpinyin-tarball-url
+  "https://github.com/libpinyin/libpinyin/releases/download/2.6.0/libpinyin-2.6.0.tar.gz"
+  "The source of libpinyin data.")
+
 (defvar pyim-basedict-libpinyin-data-files
   (list "society.table"
         "life.table"
@@ -127,6 +131,8 @@
       (sort-lines nil (point-min) (point-max))
       (goto-char (point-min))
       (insert ";; -*- coding: utf-8 -*--\n")
+      (insert (format ";; Convert from data of %S with the help of `pyim-basedict-build-file'.\n"
+                      pyim-basedict-libpinyin-tarball-url))
       (write-file "pyim-basedict.pyim" t))))
 
 ;; * Footer
