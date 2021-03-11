@@ -1,4 +1,5 @@
 ;; -*- coding: utf-8 -*--
+;; Convert from data of "https://github.com/libpinyin/libpinyin/releases/download/2.6.0/libpinyin-2.6.0.tar.gz" with the help of `pyim-basedict-build-file'.
 a 阿 啊 呵 腌 嗄 吖 锕 錒
 a-a 啊啊
 a-a-a 啊啊啊
