@@ -72,6 +72,8 @@
         "gbk_char.table")
   "Libpinyin data files")
 
+(declare-function 'pyim-extra-dicts-add-dict "pyim")
+
 ;;;###autoload
 (defun pyim-basedict-enable ()
   "Add basedict to pyim."
