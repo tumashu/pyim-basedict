@@ -1,4 +1,4 @@
-;;; pyim-basedict.el --- The default pinyin dict of pyim
+;;; pyim-basedict.el --- The default pinyin dict of pyim  -*- lexical-binding: t; -*-
 
 ;; * Header
 ;; Copyright (C) 2015 Feng Shu <tumashu@163.com>
@@ -42,9 +42,8 @@
 ;; ** 安装和使用
 ;; 1. 配置melpa源，参考：http://melpa.org/#/getting-started
 ;; 2. M-x package-install RET pyim-basedict RET
-;; 3. 在emacs配置文件中（比如: ~/.emacs）添加如下代码：
+;; 3. 在Emacs配置文件中（比如: ~/.emacs）添加如下代码：
 ;;    #+BEGIN_EXAMPLE
-;;    (require 'pyim-basedict)
 ;;    (pyim-basedict-enable)
 ;;    #+END_EXAMPLE
 
@@ -73,17 +72,23 @@
 (defun pyim-basedict-enable ()
   "Add basedict to pyim."
   (interactive)
-  (let* ((file (concat (file-name-directory
-                        (locate-library "pyim-basedict.el"))
-                       "pyim-basedict.pyim")))
+  (let* ((file (expand-file-name "pyim-basedict.pyim"
+                                 (file-name-directory
+                                  (locate-library "pyim-basedict.el")))))
     (when (file-exists-p file)
+      ;; FIXME: If `pyim-basedict-enable' is called early enough, pyim
+      ;; won't be loaded yet and this (featurep 'pyim) will return nil.
+      ;; Maybe we should just (require 'pyim) and call
+      ;; `pyim-extra-dicts-add-dict' unconditionally, or maybe we should
+      ;; use `with-eval-after-load'.
       (if (featurep 'pyim)
           (pyim-extra-dicts-add-dict
-           `(:name "Basedict-elpa"
-                   :file ,file
-                   :coding utf-8-unix
-                   :dict-type pinyin-dict
-                   :elpa t))
+           `(;; Make Indent beautiful :-)
+             :name "Basedict-elpa"
+             :file ,file
+             :coding utf-8-unix
+             :dict-type pinyin-dict
+             :elpa t))
         (message "pyim 没有安装，pyim-basedict 启用失败。")))))
 
 
