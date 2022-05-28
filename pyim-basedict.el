@@ -75,7 +75,7 @@ tarball and extract data/* to this directory.")
 (defvar pyim-basedict-libpinyin-count-info nil
   "The count info of libpinyin.")
 
-(declare-function 'pyim-extra-dicts-add-dict "pyim")
+(declare-function 'pyim-extra-dicts-add-dict "pyim-dict")
 
 ;;;###autoload
 (defun pyim-basedict-enable ()
