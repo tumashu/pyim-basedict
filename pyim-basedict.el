@@ -5,7 +5,7 @@
 
 ;; Author: Feng Shu <tumashu@163.com>
 ;; URL: https://github.com/tumashu/pyim-basedict
-;; Version: 0.5.1
+;; Version: 0.5.2
 ;; Keywords: convenience, Chinese, pinyin, input-method, complete
 
 ;; This file is part of GNU Emacs.
@@ -90,7 +90,7 @@ tarball and extract data/* to this directory.")
       ;; Maybe we should just (require 'pyim) and call
       ;; `pyim-extra-dicts-add-dict' unconditionally, or maybe we should
       ;; use `with-eval-after-load'.
-      (if (featurep 'pyim)
+      (if (featurep 'pyim-dict)
           (pyim-extra-dicts-add-dict
            `(;; Make Indent beautiful :-)
              :name "Basedict-elpa"
@@ -100,7 +100,7 @@ tarball and extract data/* to this directory.")
              :elpa t))
         (message "pyim 没有安装，pyim-basedict 启用失败。")))))
 
-(declare-function 'pyim-dline-parse "pyim")
+(declare-function 'pyim-dline-parse "pyim-common")
 
 (defun pyim-basedict-generate-count-info ()
   "从 libpinyin data 文件中获取词条的 count 信息。"
@@ -133,8 +133,7 @@ tarball and extract data/* to this directory.")
   (interactive)
   (pyim-basedict-generate-count-info)
   (let ((dir pyim-basedict-libpinyin-datadir)
-        (hash-table (make-hash-table :test #'equal))
-        (count-info (make-hash-table :test #'equal)))
+        (hash-table (make-hash-table :test #'equal)))
     (if (not (and dir (file-directory-p dir)))
         (message "Warn: `pyim-basedict-libpinyin-datadir' is not a directory.")
       (with-temp-buffer
