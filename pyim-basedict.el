@@ -44,6 +44,8 @@
 
 ;;; Code:
 ;; * 代码                                                               :code:
+(require 'pyim-dict)
+
 (defvar pyim-basedict-libpinyin-tarball-url
   "https://github.com/libpinyin/libpinyin/releases/download/2.6.0/libpinyin-2.6.0.tar.gz"
   "The source of libpinyin data.")
@@ -74,8 +76,6 @@ tarball and extract data/* to this directory.")
 
 (defvar pyim-basedict-libpinyin-count-info nil
   "The count info of libpinyin.")
-
-(declare-function 'pyim-extra-dicts-add-dict "pyim-dict")
 
 ;;;###autoload
 (defun pyim-basedict-enable ()
