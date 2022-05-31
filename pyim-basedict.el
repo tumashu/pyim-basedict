@@ -46,123 +46,22 @@
 ;; * 代码                                                               :code:
 (require 'pyim-dict)
 
-(defvar pyim-basedict-libpinyin-tarball-url
-  "https://github.com/libpinyin/libpinyin/releases/download/2.6.0/libpinyin-2.6.0.tar.gz"
-  "The source of libpinyin data.")
-
-(defvar pyim-basedict-libpinyin-datadir nil
-  "The directory of libpinyin data.
-The developers of pyim-basedict should download libpinyin release
-tarball and extract data/* to this directory.")
-
-(defvar pyim-basedict-libpinyin-data-files
-  (list "society.table"
-        "life.table"
-        "people.table"
-        "culture.table"
-        "economy.table"
-        "technology.table"
-        "science.table"
-        "nature.table"
-        "history.table"
-        "art.table"
-        "sport.table"
-        "geology.table"
-        "merged.table"
-        "opengram.table"
-        "gb_char.table"
-        "gbk_char.table")
-  "Libpinyin data files")
-
-(defvar pyim-basedict-libpinyin-count-info nil
-  "The count info of libpinyin.")
-
 ;;;###autoload
 (defun pyim-basedict-enable ()
-  "Add basedict to pyim."
+  "Add pyim-basedict.pyim file to `pyim-extra-dicts'."
   (interactive)
-  (let* ((file (expand-file-name "pyim-basedict.pyim"
-                                 (file-name-directory
-                                  (locate-library "pyim-basedict.el")))))
+  (let ((file (expand-file-name
+               "pyim-basedict.pyim"
+               (file-name-directory
+                (locate-library "pyim-basedict.el")))))
     (when (file-exists-p file)
-      ;; FIXME: If `pyim-basedict-enable' is called early enough, pyim
-      ;; won't be loaded yet and this (featurep 'pyim) will return nil.
-      ;; Maybe we should just (require 'pyim) and call
-      ;; `pyim-extra-dicts-add-dict' unconditionally, or maybe we should
-      ;; use `with-eval-after-load'.
-      (if (featurep 'pyim-dict)
-          (pyim-extra-dicts-add-dict
-           `(;; Make Indent beautiful :-)
-             :name "Basedict-elpa"
-             :file ,file
-             :coding utf-8-unix
-             :dict-type pinyin-dict
-             :elpa t))
-        (message "pyim 没有安装，pyim-basedict 启用失败。")))))
-
-(declare-function 'pyim-dline-parse "pyim-common")
-
-(defun pyim-basedict-generate-count-info ()
-  "从 libpinyin data 文件中获取词条的 count 信息。"
-  (interactive)
-  (let* ((dir pyim-basedict-libpinyin-datadir)
-         (count-info (make-hash-table :test #'equal))
-         (file (expand-file-name "interpolation2.text" dir)))
-    (unless (and pyim-basedict-libpinyin-count-info
-                 (> (hash-table-count pyim-basedict-libpinyin-count-info) 60000))
-      (when (and dir (file-directory-p dir))
-        (with-temp-buffer
-          (when (file-exists-p file)
-            (insert-file-contents file)
-            (while (not (eobp))
-              (let ((contents (pyim-dline-parse)))
-                (when (= (length contents) 5)
-                  (puthash (nth 2 contents)
-                           (or (ignore-errors (string-to-number (nth 4 contents))) 0)
-                           count-info))
-                (forward-line 1)))
-            (setq pyim-basedict-libpinyin-count-info count-info)))))))
-
-(defun pyim-basedict-cchar< (a b)
-  "如果汉字或者词条 A 的使用频率大于 B 的使用频率时，返回 t."
-  (> (or (ignore-errors (gethash a pyim-basedict-libpinyin-count-info)) 0)
-     (or (ignore-errors (gethash b pyim-basedict-libpinyin-count-info)) 0)))
-
-(defun pyim-basedict-build-file ()
-  "使用 libpinyin 自带的 data 文件创建 pyim-basedict.pyim."
-  (interactive)
-  (pyim-basedict-generate-count-info)
-  (let ((dir pyim-basedict-libpinyin-datadir)
-        (hash-table (make-hash-table :test #'equal)))
-    (if (not (and dir (file-directory-p dir)))
-        (message "Warn: `pyim-basedict-libpinyin-datadir' is not a directory.")
-      (with-temp-buffer
-        (dolist (filename pyim-basedict-libpinyin-data-files)
-          (when (file-exists-p (expand-file-name filename dir))
-            (insert-file-contents (expand-file-name filename dir))
-            (goto-char (point-max))))
-        (goto-char (point-min))
-        (while (not (eobp))
-          (let* ((contents (pyim-dline-parse))
-                 (code (replace-regexp-in-string
-                        "'" "-"
-                        (car contents)))
-                 (word (cadr contents)))
-            (puthash code (push word (gethash code hash-table))
-                     hash-table))
-          (forward-line 1)))
-      (with-temp-buffer
-        (maphash
-         (lambda (key value)
-           (setq value (sort (delete-dups (reverse value)) #'pyim-basedict-cchar<))
-           (insert (format "%s %s\n" key (mapconcat #'identity value " "))))
-         hash-table)
-        (sort-lines nil (point-min) (point-max))
-        (goto-char (point-min))
-        (insert ";; -*- coding: utf-8 -*--\n")
-        (insert (format ";; Convert from data of %S with the help of `pyim-basedict-build-file'.\n"
-                        pyim-basedict-libpinyin-tarball-url))
-        (write-file "pyim-basedict.pyim" t)))))
+      (pyim-extra-dicts-add-dict
+       `(;; Make Indent beautiful :-)
+         :name "Basedict-elpa"
+         :file ,file
+         :coding utf-8-unix
+         :dict-type pinyin-dict
+         :elpa t)))))
 
 ;; * Footer
 (provide 'pyim-basedict)
