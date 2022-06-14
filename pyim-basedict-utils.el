@@ -5,7 +5,6 @@
 
 ;; Author: Feng Shu <tumashu@163.com>
 ;; URL: https://github.com/tumashu/pyim-basedict
-;; Version: 0.5.3
 ;; Keywords: convenience, Chinese, pinyin, input-method, complete
 
 ;; This file is part of GNU Emacs.
